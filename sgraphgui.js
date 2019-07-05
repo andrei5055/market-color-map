@@ -132,13 +132,35 @@ function sgraphgui() {
         drawFavicon();
 
         if (localStorage && m_sgraph) {
-            let strHistData = localStorage.getItem("sg_historical_data");
-            if (strHistData) {
+            let strHistData = localStorage.getItem("sg_hist_data");
+            let strHistName = localStorage.getItem("sg_hist_name");
+            if (!strHistData || !strHistName) {
+                loadFile("TEST.csv");              
+            }
+            else {
+                document.getElementById("sg_filename").innerText = strHistName;
                 m_sgraph.histDataToTable(strHistData);
                 showSGraph();
             }
         }
     }
+    function loadFile(filePath) {
+        var xmlhttp = new XMLHttpRequest();
+        xmlhttp.onload = historyDataLoaded;
+        xmlhttp.open("GET", filePath, true);
+        xmlhttp.setRequestHeader("Content-Type", "text/html");
+        xmlhttp.send();
+    }
+    function historyDataLoaded() {
+        if (this.status == 200 && this.responseText) {
+            document.getElementById("sg_filename").innerText = "TEST.csv";
+            m_sgraph.histDataToTable(this.responseText);
+            showSGraph();
+        } else {
+            document.body.innerHTML = this.responseText;
+        }
+    }
+
     function getMouseX(e) {
         return (m_TouchScreen && e.touches) ? e.touches[0].clientX : e.clientX;
     }
@@ -515,6 +537,9 @@ function sgraphgui() {
         let result = document.getElementById("sg_result");
         let fileName = document.getElementById("sg_filename");
         if (result && fileName && m_sgraph && m_sgraph.m_nData > 0) {
+            if (localStorage != undefined) {
+                localStorage.setItem("sg_hist_name", fileName.innerHTML);
+            }
             let resultTxt = fileName.innerText;
             let iStart = Math.floor(m_sgraph.m_Start);
             let iStop = Math.floor(m_sgraph.m_Stop);

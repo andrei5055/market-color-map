@@ -973,7 +973,7 @@ function sgraph()
     }
     histDataToTable = function (str) {
         if (localStorage != undefined) {
-            localStorage.setItem("sg_historical_data", str);
+            localStorage.setItem("sg_hist_data", str);
         }
 
         let histTable = document.getElementById("historical_data");
